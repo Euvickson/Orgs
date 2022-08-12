@@ -7,6 +7,7 @@ import br.com.alura.orgs.databinding.ActivityFormularioProdutoBinding
 import br.com.alura.orgs.extensions.tentaCarregarImagem
 import br.com.alura.orgs.model.Produto
 import br.com.alura.orgs.ui.dialog.FormularioImagemDialog
+import kotlinx.coroutines.*
 import java.math.BigDecimal
 
 class FormularioProdutoActivity : AppCompatActivity() {
@@ -14,8 +15,12 @@ class FormularioProdutoActivity : AppCompatActivity() {
     private val binding by lazy {
         ActivityFormularioProdutoBinding.inflate(layoutInflater)
     }
+    private val produtoDao by lazy {
+        AppDatabase.instancia(this).produtoDao()
+    }
     private var url: String? = null
     private var idProduto: Long = 0L
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,32 +33,45 @@ class FormularioProdutoActivity : AppCompatActivity() {
                 binding.activityFormularioProdutoImagem.tentaCarregarImagem(url)
             }
         }
-        intent.getParcelableExtra<Produto>(CHAVE_PRODUTO)?.let { produtoCarregado ->
-            title = "Alterar Produto"
-            idProduto = produtoCarregado.id
-            url = produtoCarregado.imagem
-            with(binding) {
-                activityFormularioProdutoImagem.tentaCarregarImagem(produtoCarregado.imagem)
-                activityFormularioProdutoNome.setText(produtoCarregado.nome)
-                activityFormularioProdutoDescricao.setText(produtoCarregado.descricao)
-                activityFormularioProdutoValor.setText(produtoCarregado.valor.toPlainString())
+        tentaCarregarProduto()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        scope.launch {
+            produtoDao.buscaPorId(idProduto)?.let {
+                withContext(Dispatchers.Main) {
+                    preencheCampos(it)
+                }
             }
+        }
+
+    }
+
+    private fun tentaCarregarProduto() {
+        idProduto = intent.getLongExtra(CHAVE_PRODUTO_ID, 0L)
+    }
+
+    private fun preencheCampos(produto: Produto) {
+        title = "Alterar Produto"
+        url = produto.imagem
+        with(binding) {
+            activityFormularioProdutoImagem.tentaCarregarImagem(produto.imagem)
+            activityFormularioProdutoNome.setText(produto.nome)
+            activityFormularioProdutoDescricao.setText(produto.descricao)
+            activityFormularioProdutoValor.setText(produto.valor.toPlainString())
         }
     }
 
     private fun configuraBotaoSalvar() {
         val botaoSalvar = binding.activityFormularioProdutoBotaoSalvar
-        val db = AppDatabase.instancia(this)
-        val produtoDao = db.produtoDao()
         botaoSalvar.setOnClickListener {
             val produtoNovo = criaProduto()
-            if(idProduto > 0) {
-                produtoDao.atualiza(produtoNovo)
-            } else {
+            scope.launch {
                 produtoDao.salva(produtoNovo)
             }
-            finish()
         }
+        finish()
     }
 
     private fun criaProduto(): Produto {

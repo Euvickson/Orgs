@@ -6,6 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import br.com.alura.orgs.database.AppDatabase
 import br.com.alura.orgs.databinding.ActivityListaProdutosActivityBinding
 import br.com.alura.orgs.ui.recyclerview.adapter.ListaProdutosAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ListaProdutosActivity : AppCompatActivity() {
 
@@ -25,7 +29,13 @@ class ListaProdutosActivity : AppCompatActivity() {
         super.onResume()
         val db = AppDatabase.instancia(this)
         val produtoDao = db.produtoDao()
-        adapter.atualiza(produtoDao.buscaTodos())
+        val scope = MainScope()
+        scope.launch {
+            val produtos = withContext(Dispatchers.IO) {
+                produtoDao.buscaTodos()
+            }
+            adapter.atualiza(produtos = produtos)
+        }
     }
 
     private fun configuraFab() {
@@ -49,7 +59,7 @@ class ListaProdutosActivity : AppCompatActivity() {
                 DetalhesProdutoActivity::class.java
             )
                 .apply {
-                    this.putExtra(CHAVE_PRODUTO, it)
+                    this.putExtra(CHAVE_PRODUTO_ID, it.id)
                 }
             startActivity(intent)
         }
