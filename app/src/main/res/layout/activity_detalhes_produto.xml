@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -11,65 +12,65 @@
         tools:context=".ui.activity.DetalhesProdutoActivity">
 
         <ImageView
-            android:id="@+id/produto_detalhes_imageview"
+            android:id="@+id/activity_detalhes_produto_imagem"
             android:layout_width="0dp"
             android:layout_height="200dp"
+            android:contentDescription="Imagem do produto"
             android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
             tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
         <TextView
-            android:id="@+id/produto_detalhes_valor"
+            android:id="@+id/activity_detalhes_produto_nome"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/fundo_preco"
-            android:elevation="10dp"
-            android:fontFamily="@font/montserrat_alternates"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:textColor="@android:color/holo_green_dark"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/produto_detalhes_imageview"
-            app:layout_constraintStart_toStartOf="@id/produto_detalhes_imageview"
-            app:layout_constraintTop_toBottomOf="@id/produto_detalhes_imageview"
-            tools:text="R$ 19.99" />
-
-        <TextView
-            android:id="@+id/produto_detalhes_titulo"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_margin="16dp"
+            android:fontFamily="@font/montserrat_bold"
             android:textSize="28sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/montserrat_alternates_bold"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/produto_detalhes_valor"
-            tools:text="@tools:sample/lorem" />
+            app:layout_constraintTop_toBottomOf="@+id/activity_detalhes_produto_valor"
+            app:layout_constraintVertical_bias="0.0"
+            tools:text="@tools:sample/lorem[10]" />
 
         <TextView
-            android:id="@+id/produto_detalhes_descricao"
+            android:id="@+id/activity_detalhes_produto_descricao"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:layout_constraintVertical_bias="0.0"
+            android:gravity="top"
             android:textSize="20sp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintEnd_toEndOf="@id/produto_detalhes_titulo"
-            app:layout_constraintStart_toStartOf="@id/produto_detalhes_titulo"
-            app:layout_constraintTop_toBottomOf="@id/produto_detalhes_titulo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/activity_detalhes_produto_nome"
             tools:text="@tools:sample/lorem/random" />
+
+        <TextView
+            android:id="@+id/activity_detalhes_produto_valor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@drawable/plano_de_fundo_arredondado"
+            android:elevation="10dp"
+            android:fontFamily="@font/montserrat_bold"
+            android:padding="8dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:textColor="@android:color/holo_green_dark"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/activity_detalhes_produto_imagem"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/activity_detalhes_produto_imagem"
+            tools:text="R$ 1299,99" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

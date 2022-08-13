@@ -1,50 +1,47 @@
 package br.com.alura.orgs.ui.activity
 
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import br.com.alura.orgs.R
 import br.com.alura.orgs.database.AppDatabase
 import br.com.alura.orgs.databinding.ActivityDetalhesProdutoBinding
-import br.com.alura.orgs.extensions.formataParaBrasileiro
+import br.com.alura.orgs.extensions.formataParaMoedaBrasileira
 import br.com.alura.orgs.extensions.tentaCarregarImagem
 import br.com.alura.orgs.model.Produto
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class DetalhesProdutoActivity : AppCompatActivity() {
 
-
-    private var idProduto: Long = 0L
+    private var produtoId: Long = 0L
     private var produto: Produto? = null
-    private lateinit var binding: ActivityDetalhesProdutoBinding
-
+    private val binding by lazy {
+        ActivityDetalhesProdutoBinding.inflate(layoutInflater)
+    }
     private val produtoDao by lazy {
         AppDatabase.instancia(this).produtoDao()
     }
-    private val scope = CoroutineScope(Dispatchers.IO)
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityDetalhesProdutoBinding.inflate(layoutInflater)
         setContentView(binding.root)
         tentaCarregarProduto()
     }
 
     override fun onResume() {
         super.onResume()
-        buscaProdutoNoBanco()
+        buscaProduto()
     }
 
-    private fun buscaProdutoNoBanco() {
-        scope.launch {
-            produto = produtoDao.buscaPorId(idProduto)
-            withContext(Dispatchers.Main){
+    private fun buscaProduto() {
+        lifecycleScope.launch {
+            produtoDao.buscaPorId(produtoId).collect { produtoEncontrado ->
+                produto = produtoEncontrado
                 produto?.let {
                     preencheCampos(it)
                 } ?: finish()
@@ -60,16 +57,18 @@ class DetalhesProdutoActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_detalhes_produto_remover -> {
-                scope.launch {
-                    produto?.let { produtoDao.remove(it) }
+                produto?.let {
+                    lifecycleScope.launch {
+                        produtoDao.remove(it)
+                        finish()
+                    }
                 }
-                finish()
+
             }
             R.id.menu_detalhes_produto_editar -> {
                 Intent(this, FormularioProdutoActivity::class.java).apply {
-                    putExtra(CHAVE_PRODUTO_ID, idProduto)
+                    putExtra(CHAVE_PRODUTO_ID, produtoId)
                     startActivity(this)
-
                 }
             }
         }
@@ -77,15 +76,17 @@ class DetalhesProdutoActivity : AppCompatActivity() {
     }
 
     private fun tentaCarregarProduto() {
-        idProduto = intent.getLongExtra(CHAVE_PRODUTO_ID, 0L)
+        produtoId = intent.getLongExtra(CHAVE_PRODUTO_ID, 0L)
     }
 
     private fun preencheCampos(produtoCarregado: Produto) {
         with(binding) {
-            produtoDetalhesImageview.tentaCarregarImagem(produtoCarregado.imagem)
-            produtoDetalhesTitulo.text = produtoCarregado.nome
-            produtoDetalhesDescricao.text = produtoCarregado.descricao
-            produtoDetalhesValor.text = produtoCarregado.valor.formataParaBrasileiro()
+            activityDetalhesProdutoImagem.tentaCarregarImagem(produtoCarregado.imagem)
+            activityDetalhesProdutoNome.text = produtoCarregado.nome
+            activityDetalhesProdutoDescricao.text = produtoCarregado.descricao
+            activityDetalhesProdutoValor.text =
+                produtoCarregado.valor.formataParaMoedaBrasileira()
         }
     }
+
 }

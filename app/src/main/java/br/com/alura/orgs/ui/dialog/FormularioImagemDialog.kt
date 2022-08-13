@@ -10,27 +10,36 @@ class FormularioImagemDialog(private val context: Context) {
 
     fun mostra(
         urlPadrao: String? = null,
-        quandoImagemCarregada: (imagem: String) -> Unit
-    ) {
-        FormularioImagemBinding.inflate(LayoutInflater.from(context)).apply {
-            urlPadrao?.let {
-                formularioImagemImageview.tentaCarregarImagem(it)
-                formularioImagemUrl.setText(it)
-            }
-            formularioIagemBotaoCarregar.setOnClickListener {
-                val url = formularioImagemUrl.text.toString()
-                formularioImagemImageview.tentaCarregarImagem(url)
-            }
+        quandoImagemCarragada: (imagem: String) -> Unit
+    )  {
+        FormularioImagemBinding
+            .inflate(LayoutInflater.from(context)).apply {
 
-            AlertDialog.Builder(context)
-                .setView(root)
-                .setPositiveButton("Confirmar") { _, _ ->
-                    val url = formularioImagemUrl.text.toString()
-                    quandoImagemCarregada(url)
+                urlPadrao?.let {
+                    formularioImagemImageview.tentaCarregarImagem(it)
+                    formularioImagemUrl.setText(it)
                 }
-                .setNegativeButton("Cancelar") { _, _ ->
 
-                }.show()
-        }
+                formularioImagemBotaoCarregar.setOnClickListener {
+                    val url = formularioImagemUrl.text.toString()
+                    formularioImagemImageview.tentaCarregarImagem(url)
+                }
+
+                AlertDialog.Builder(context)
+                    .setView(root)
+                    .setPositiveButton("Confirmar") { _, _ ->
+                        val url = formularioImagemUrl.text.toString()
+                        quandoImagemCarragada(url)
+                    }
+                    .setNegativeButton("Cancelar") { _, _ ->
+
+                    }
+                    .show()
+            }
+
+
+
+
     }
+
 }

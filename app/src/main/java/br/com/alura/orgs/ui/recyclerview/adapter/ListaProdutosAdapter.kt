@@ -6,15 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import br.com.alura.orgs.databinding.ProdutoItemBinding
+import br.com.alura.orgs.extensions.formataParaMoedaBrasileira
 import br.com.alura.orgs.extensions.tentaCarregarImagem
 import br.com.alura.orgs.model.Produto
-import java.text.NumberFormat
-import java.util.*
 
 class ListaProdutosAdapter(
     private val context: Context,
     produtos: List<Produto> = emptyList(),
-    var quandoClicado: (produto: Produto) -> Unit = {}
+    var quandoClicaNoItem: (produto: Produto) -> Unit = {}
 ) : RecyclerView.Adapter<ListaProdutosAdapter.ViewHolder>() {
 
     private val produtos = produtos.toMutableList()
@@ -27,7 +26,7 @@ class ListaProdutosAdapter(
         init {
             itemView.setOnClickListener {
                 if (::produto.isInitialized) {
-                    quandoClicado(produto)
+                    quandoClicaNoItem(produto)
                 }
             }
         }
@@ -39,8 +38,9 @@ class ListaProdutosAdapter(
             val descricao = binding.produtoItemDescricao
             descricao.text = produto.descricao
             val valor = binding.produtoItemValor
-            val formatador = NumberFormat.getCurrencyInstance(Locale("pt", "br"))
-            valor.text = formatador.format(produto.valor)
+            val valorEmMoeda: String = produto.valor
+                .formataParaMoedaBrasileira()
+            valor.text = valorEmMoeda
 
             val visibilidade = if (produto.imagem != null) {
                 View.VISIBLE
@@ -52,6 +52,8 @@ class ListaProdutosAdapter(
 
             binding.imageView.tentaCarregarImagem(produto.imagem)
         }
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
